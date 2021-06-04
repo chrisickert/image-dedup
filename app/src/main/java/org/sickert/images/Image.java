@@ -1,7 +1,6 @@
 package org.sickert.images;
 
 import java.awt.image.BufferedImage;
-import java.awt.image.ColorModel;
 import java.awt.Graphics2D;
 import java.io.File;
 import java.io.IOException;
@@ -47,7 +46,7 @@ public class Image {
     }
 
     /**
-     * Returns the color difference of the given pixels in the given color models.
+     * Returns the color difference of the given pixels.
      * The result is in the range 0 (= identical) to 255+255+255 (= completely different).
      */
     private int pixelDifference(int pixel1, int pixel2) {
