@@ -16,8 +16,8 @@ public class Image {
 
     private BufferedImage data;
 
-    public static Image fromPath(String imagePath) throws IOException {
-        BufferedImage image = ImageIO.read(new File(imagePath));
+    public static Image fromFile(File imageFile) throws IOException {
+        BufferedImage image = ImageIO.read(imageFile);
         return new Image(image);
     }
 
