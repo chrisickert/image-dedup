@@ -1,4 +1,4 @@
-package org.sickert.images.dedup;
+package org.sickert.images;
 
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
@@ -23,17 +23,15 @@ public class Image {
 
     public double similarity(Image otherImage) {
         Image otherImageOfSameSize = makeSameSize(otherImage);
-        ColorModel thisColorModel = this.data.getColorModel();
-        ColorModel otherColorModel = otherImageOfSameSize.data.getColorModel();
         long difference = 0;
         for (int y = this.data.getMinY(); y < this.data.getMinY() + this.data.getHeight(); y++) {
             for (int x = this.data.getMinX(); x < this.data.getMinX() + this.data.getWidth(); x++) {
-                difference += pixelDifference(this.data.getRGB(x, y), thisColorModel, 
-                    otherImageOfSameSize.data.getRGB(x, y), otherColorModel);
+                difference += pixelDifference(this.data.getRGB(x, y), otherImageOfSameSize.data.getRGB(x, y));
             }
         }
 
-        return 1.0d - ((double)difference / (double)((255 + 255 + 255) * this.data.getWidth() * this.data.getHeight()));
+        double maxDifference = (255 + 255 + 255) * this.data.getWidth() * this.data.getHeight();
+        return 1.0d - ((double)difference / maxDifference);
     }
 
     private Image makeSameSize(Image otherImage) {
@@ -50,12 +48,24 @@ public class Image {
 
     /**
      * Returns the color difference of the given pixels in the given color models.
-     * The result is in the range 0 (= identical) to 100 (= completely different).
+     * The result is in the range 0 (= identical) to 255+255+255 (= completely different).
      */
-    private int pixelDifference(int pixel1, ColorModel colorModel1, int pixel2, ColorModel colorModel2) {
+    private int pixelDifference(int pixel1, int pixel2) {
         return 
-            Math.abs(colorModel1.getRed(pixel1) - colorModel2.getRed(pixel2)) +
-            Math.abs(colorModel1.getGreen(pixel1) - colorModel2.getGreen(pixel2)) +
-            Math.abs(colorModel1.getBlue(pixel1) - colorModel2.getBlue(pixel2));
+            Math.abs(redPortion(pixel1) - redPortion(pixel2)) +
+            Math.abs(greenPortion(pixel1) - greenPortion(pixel2)) +
+            Math.abs(bluePortion(pixel1) - bluePortion(pixel2));
+    }
+
+    private int redPortion(int pixel) {
+        return pixel >> 16 & 0xff;
+    }
+
+    private int greenPortion(int pixel) {
+        return pixel >> 8 & 0xff;
+    }
+
+    private int bluePortion(int pixel) {
+        return pixel & 0xff;
     }
 }
